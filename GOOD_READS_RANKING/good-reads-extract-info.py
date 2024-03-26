@@ -1,5 +1,7 @@
+import csv
 import requests
 from bs4 import BeautifulSoup
+
 # import mysql.connector
 
 URL= "https://www.goodreads.com/list/show/9440.100_Best_Books_of_All_Time_The_World_Library_List"
@@ -15,7 +17,6 @@ except requests.RequestException as e:
 soup = BeautifulSoup(response.text, "html.parser")
 books = []
 
-# class="tableList js-dataTooltip
 
 content = soup.find('table', class_ ='tableList')
 rows = content.find_all('tr', attrs={'itemscope': ''})
@@ -23,29 +24,30 @@ rows = content.find_all('tr', attrs={'itemscope': ''})
 #rows =rows content.find_all('span', attrs={'itemprop': 'name'})
 
 for article in rows:
-    # title = article.find('bookTitle')
-    print("\n##############inicio##############")
+    # print("\n##############inicio##############")
     title = article.find('span').text
-    author = article.find('a', attrs={'class': 'authorName'}).text
-    #rate
-    #rating
+    data_author = article.find('a', attrs={'class': 'authorName'})
+    link_book = data_author.get('href')
+    author = data_author.text
+    rates = article.find('span', attrs={'class': 'minirating'}).text
+    #book_page = link_author.click()
+    
+    separated = rates.split()
+    rate = separated[0]
+    rating = separated[4]
     #genre
     #first_published
-    
-    #a_tag = article.find('a', class_ = 'bookTitle')
-    #url = a_tag['href']
-    # text = article.find_all('span', attrs={'itemprop': 'name'})
-    #title = next.text
-    #precio=a_tag
 
-    #precio_tag = article.find_next('span',class_='woocommerce-Price-amount')
-    #if precio_tag: 
-    #    preciotxt= precio_tag.bdi.text.replace('$','').replace('=','').replace(',','.').replace('\xa','.') # modificacion de caracteres
-    #    precio_nro= float(preciotxt)
+    books.append({
+        'title': title,
+        'author': author,
+        'url': link_book,
+        'rate': rate,
+        'rating': rating
+    })
 
-    #libros.append({
-    #    'titulo': titulo,
-    #    'url':url,
-    #    'precio_pesos': precio_nro
-    #})
-    print(article)
+header = ['title', 'author', 'url', 'rate', 'rating']
+with open('good-reads.csv', 'w') as csvfile:
+    writer = csv.DictWriter(csvfile, fieldnames=header)
+    writer.writeheader()
+    writer.writerows(books)
