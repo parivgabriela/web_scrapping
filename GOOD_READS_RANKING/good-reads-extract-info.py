@@ -21,22 +21,17 @@ books = []
 content = soup.find('table', class_ ='tableList')
 rows = content.find_all('tr', attrs={'itemscope': ''})
 
-#rows =rows content.find_all('span', attrs={'itemprop': 'name'})
 
 for article in rows:
-    # print("\n##############inicio##############")
     title = article.find('span').text
     data_author = article.find('a', attrs={'class': 'authorName'})
     link_book = data_author.get('href')
     author = data_author.text
     rates = article.find('span', attrs={'class': 'minirating'}).text
-    #book_page = link_author.click()
     
     separated = rates.split()
     rate = separated[0]
     rating = separated[4]
-    #genre
-    #first_published
 
     books.append({
         'title': title,
